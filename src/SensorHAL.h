@@ -90,6 +90,7 @@
 #define ST_SENSORS_LIST_48				"lsm6dso32"
 #define ST_SENSORS_LIST_49				"lsm6dsx"
 
+#define ROHM_SENSORS_LIST_0				"bh1730"
 
 /*
  * IIO driver sensors suffix for sensors
