@@ -1072,6 +1072,7 @@ static int st_hal_set_fullscale(char *iio_sysfs_path,
 		struct device_iio_info_channel *channels,
 		int num_channels)
 {
+	ALOGD("TH779 edit: st_hal_set_fullscale");
 	double max_number = 0;
 	int err, i, c, max_value;
 	device_iio_chan_type_t iio_sensor_type;
@@ -1117,9 +1118,12 @@ static int st_hal_set_fullscale(char *iio_sysfs_path,
 	if (i == (int)sa->length)
 		i = sa->length - 1;
 
+	ALOGD("TH779 edit: set_scale(%s, %f, %d)", iio_sysfs_path,
+					  sa->scales[i], iio_sensor_type);
 	err = device_iio_utils::set_scale(iio_sysfs_path,
 					  sa->scales[i],
 					  iio_sensor_type);
+	ALOGD("TH779 edit: set_scale err = %d", err);
 	if (err < 0)
 		return err;
 
@@ -1137,6 +1141,7 @@ static int st_hal_set_fullscale(char *iio_sysfs_path,
  */
 static int st_hal_load_iio_devices_data(STSensorHAL_iio_devices_data *data)
 {
+	ALOGD("TH779 edit: st_hal_load_iio_devices_data");
 	unsigned int index = 0;
 	int err;
 	unsigned int n;
@@ -1232,6 +1237,7 @@ static int st_hal_load_iio_devices_data(STSensorHAL_iio_devices_data *data)
 				goto st_hal_load_free_iio_channels;
 			}
 
+			ALOGD("TH779 edit: To operate scale");
 			err = device_iio_utils::get_available_scales(data[index].iio_sysfs_path,
 								     &data[index].sa,
 								     ST_sensors_supported[n].iio_sensor_type);
@@ -1786,6 +1792,7 @@ static int st_hal_open_sensors(const struct hw_module_t *module,
 				const char __attribute__((unused))*id,
 				struct hw_device_t **device)
 {
+	ALOGD("TH779 edit: st_hal_open_sensors");
 	bool real_sensor_class;
 	STSensorHAL_data *hal_data;
 	int sensor_class_valid_num = 0;
@@ -1838,7 +1845,9 @@ static int st_hal_open_sensors(const struct hw_module_t *module,
 	}
 #endif /* CONFIG_ST_HAL_FACTORY_CALIBRATION */
 
+	ALOGD("TH779 edit: device_found_num");
 	device_found_num = st_hal_load_iio_devices_data(iio_devices_data);
+	ALOGD("TH779 edit: device_found_num = %d", device_found_num);
 	if (device_found_num < 0) {
 		err = device_found_num;
 
@@ -1846,11 +1855,13 @@ static int st_hal_open_sensors(const struct hw_module_t *module,
 	}
 
 	for (i = 0; i < device_found_num; i++) {
+		ALOGD("TH779 edit: st_hal_create_class_sensor, i = %d", i);
 #ifdef CONFIG_ST_HAL_FACTORY_CALIBRATION
 		sensor_class = st_hal_create_class_sensor(&iio_devices_data[i], classes_available + 1, &private_data);
 #else /* CONFIG_ST_HAL_FACTORY_CALIBRATION */
 		sensor_class = st_hal_create_class_sensor(&iio_devices_data[i], classes_available + 1, NULL);
 #endif /* CONFIG_ST_HAL_FACTORY_CALIBRATION */
+		ALOGD("TH779 edit: st_hal_create_class_sensor done, i = %d", i);
 		if (!sensor_class) {
 			ALOGE("\"%s\": failed to create HW sensor class.", iio_devices_data[i].device_name);
 			continue;
